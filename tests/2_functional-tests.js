@@ -21,14 +21,19 @@ suite('Functional Tests', function () {
   */
   test('#example Test GET /api/books', function (done) {
     chai.request(server)
-      .get('/api/books')
-      .end(function (err, res) {
-        assert.equal(res.status, 200)
-        assert.isArray(res.body, 'response should be an array')
-        assert.property(res.body[0], 'commentcount', 'Books in array should contain commentcount')
-        assert.property(res.body[0], 'title', 'Books in array should contain title')
-        assert.property(res.body[0], '_id', 'Books in array should contain _id')
-        done()
+      .post('/api/books')
+      .send({ title: 'Of Mice and Men' })
+      .end((err, res) => {
+        chai.request(server)
+          .get('/api/books')
+          .end(function (err, res) {
+            assert.equal(res.status, 200)
+            assert.isArray(res.body, 'response should be an array')
+            assert.property(res.body[0], 'commentcount', 'Books in array should contain commentcount')
+            assert.property(res.body[0], 'title', 'Books in array should contain title')
+            assert.property(res.body[0], '_id', 'Books in array should contain _id')
+            done()
+          })
       })
   })
   /*
@@ -88,7 +93,7 @@ suite('Functional Tests', function () {
           .get('/api/books/fakeIdfakeId')
           .end((err, res) => {
             assert.equal(res.status, 200)
-            assert.equal(body.message, 'no book exists')
+            assert.equal(res.body.message, 'no book exists')
             done()
           })
       })
@@ -129,7 +134,7 @@ suite('Functional Tests', function () {
                 assert.equal(res.body.title, 'Peter and Jane')
                 assert.equal(res.body._id, _id)
                 assert.isArray(res.body.comments)
-                assert.include(res.body.comments, 'Great books for kids')
+                assert.include(res.body.comments, 'Great book for kids')
                 done()
               })
           })
@@ -142,7 +147,7 @@ suite('Functional Tests', function () {
           .delete('/api/books/fakeIdfakeId')
           .end((err, res) => {
             assert.equal(res.status, 200)
-            assert.equal(body.message, 'no book exists')
+            assert.equal(res.body.message, 'no book exists')
             done()
           })
       })
@@ -166,12 +171,12 @@ suite('Functional Tests', function () {
     suite('DELETE /api/books => delete all books in the database', () => {
       test('Test DELETE /api/books', done => {
         chai.request(server)
-        .delete('/api/books')
-        .end((err, res) => {
-          assert.equal(res.status, 200)
-          assert.equal(res.body.message, 'complete delete successful')
-          done()
-        })
+          .delete('/api/books')
+          .end((err, res) => {
+            assert.equal(res.status, 200)
+            assert.equal(res.body.message, 'complete delete successful')
+            done()
+          })
       })
     })
   })

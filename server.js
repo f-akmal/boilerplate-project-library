@@ -5,6 +5,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const helmet = require('helmet')
+const mongoose = require('mongoose')
 
 const apiRoutes = require('./routes/api.js')
 const fccTestingRoutes = require('./routes/fcctesting.js')
@@ -48,8 +49,13 @@ app.use(function (req, res, next) {
 })
 
 //Start our server and tests!
-app.listen(process.env.PORT || 3000, function () {
+app.listen(process.env.PORT || 3000, async function () {
   console.log("Listening on port " + process.env.PORT)
+  await mongoose.connect(process.env.DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+  })
   if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...')
     setTimeout(function () {
